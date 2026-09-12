@@ -1,0 +1,45 @@
+#!/bin/sh
+#
+# Refuse le commit tant que la suite de tests n'est pas verte.
+#
+# Ce garde-fou est la contrepartie mecanique de la regle TDD decrite dans
+# .claude/skills/regles-de-code/SKILL.md : les regles ecrites s'oublient, un
+# commit refuse, non.
+#
+# Ce fichier est versionne avec le projet et active par `core.hooksPath`
+# (voir le script `prepare` de package.json), afin qu'il suive le depot lors
+# d'un clone — ce que ne fait jamais le dossier .git/hooks.
+
+set -e
+
+repository_root=$(git rev-parse --show-toplevel)
+cd "$repository_root"
+
+if [ ! -d node_modules ]; then
+  echo ""
+  echo "COMMIT REFUSE : les dependances ne sont pas installees."
+  echo "Lance d'abord : npm install"
+  echo ""
+  exit 1
+fi
+
+echo ""
+echo "Verification de la suite de tests avant commit..."
+echo ""
+
+if npm test; then
+  echo ""
+  echo "Tests verts : commit autorise."
+  echo ""
+  exit 0
+fi
+
+echo ""
+echo "=================================================================="
+echo " COMMIT REFUSE : des tests echouent."
+echo ""
+echo " Corrige-les, puis recommence le commit."
+echo " Regles du projet : .claude/skills/regles-de-code/SKILL.md"
+echo "=================================================================="
+echo ""
+exit 1

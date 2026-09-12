@@ -1,0 +1,10 @@
+# Fins de ligne normalisees en LF dans le depot, quel que soit le systeme.
+# Evite qu'un aller-retour Windows / macOS / Linux fasse apparaitre tout un
+# fichier comme modifie.
+* text=auto eol=lf
+
+# Les scripts de lancement Windows exigent des fins de ligne CRLF.
+*.cmd text eol=crlf
+
+# Le hook doit rester en LF : il est execute par sh.
+.githooks/* text eol=lf

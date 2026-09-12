@@ -1,0 +1,14 @@
+node_modules/
+dist/
+coverage/
+
+# Journaux et fichiers temporaires
+*.log
+npm-debug.log*
+
+# Reglages locaux de l'editeur et de l'outillage
+.idea/
+.vscode/
+.claude/settings.local.json
+.DS_Store
+Thumbs.db
