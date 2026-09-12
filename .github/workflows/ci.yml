@@ -1,0 +1,49 @@
+# Verification automatique a chaque poussee et a chaque pull request.
+#
+# Le CI rejoue exactement les deux etapes du hook pre-commit
+# (.githooks/pre-commit) : tests puis compilation. Les deux garde-fous sont
+# volontairement redondants — le hook donne un retour immediat en local, le CI
+# rattrape ce qui l'aurait contourne (`--no-verify`, hook non arme apres un
+# clone sans `npm install`, poussee depuis une autre machine).
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Une nouvelle poussee annule la verification encore en cours sur la meme
+# branche : son resultat porterait sur un etat deja depasse.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verification:
+    name: Tests et compilation
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          # Meme version majeure qu'en developpement.
+          node-version: '22'
+          cache: npm
+
+      - name: Installer les dependances
+        # `npm ci` installe exactement ce que decrit package-lock.json, la ou
+        # `npm install` peut resoudre des versions plus recentes et rendre le
+        # resultat du CI non reproductible.
+        run: npm ci
+
+      - name: Suite de tests
+        run: npm test
+
+      - name: Compilation du projet
+        run: npm run build

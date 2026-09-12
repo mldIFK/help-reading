@@ -47,6 +47,11 @@ visuel laisse les 151 tests verts et n'est rattrapée que par le build.
 Le hook est activé par `core.hooksPath`, que le script `prepare` de
 `package.json` rearme automatiquement à chaque `npm install`.
 
+Les **mêmes deux étapes** sont rejouées par le CI GitHub
+(`.github/workflows/ci.yml`) à chaque poussée sur `main` et à chaque pull
+request. Toute étape ajoutée à l'un doit l'être à l'autre, sans quoi les deux
+garde-fous divergent et le local cesse de prédire le CI.
+
 Conséquences à respecter :
 
 - **Ne jamais utiliser `git commit --no-verify`**, ni désactiver `core.hooksPath`,

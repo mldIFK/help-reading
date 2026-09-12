@@ -183,3 +183,18 @@ Pour le réactiver manuellement en cas de besoin :
 ```bash
 git config core.hooksPath .githooks
 ```
+
+### Intégration continue (GitHub Actions)
+
+`.github/workflows/ci.yml` rejoue les deux mêmes étapes — `npm test` puis
+`npm run build` — à chaque poussée sur `main` et à chaque pull request.
+
+La redondance avec le hook est voulue : le hook donne un retour immédiat en
+local, le CI rattrape ce qui l'aurait contourné (un `--no-verify`, un clone où
+`npm install` n'a pas encore armé le hook, une poussée depuis une autre
+machine).
+
+> ⚠️ Le CI ne s'exécute que si le dépôt est hébergé sur GitHub. Tant que le
+> dépôt reste purement local (aucun *remote* configuré), le fichier est en
+> place mais dormant — il n'y a rien à corriger, il s'activera tout seul au
+> premier `git push`.
