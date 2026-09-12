@@ -34,8 +34,17 @@ Le cycle, pour chaque comportement ajouté ou modifié :
 
 ### Le garde-fou mécanique
 
-Un hook git (`.githooks/pre-commit`) **refuse tout commit** tant qu'un test
-échoue. Il est activé par `core.hooksPath`, que le script `prepare` de
+Un hook git (`.githooks/pre-commit`) **refuse tout commit** qui ne passe pas les
+deux vérifications suivantes, dans cet ordre :
+
+1. `npm test` — la suite complète doit être verte.
+2. `npm run build` — le projet doit compiler.
+
+Les deux sont nécessaires : les tests couvrent les règles métier, la compilation
+attrape ce qu'aucun test n'importe. Une erreur de syntaxe dans un écran purement
+visuel laisse les 151 tests verts et n'est rattrapée que par le build.
+
+Le hook est activé par `core.hooksPath`, que le script `prepare` de
 `package.json` rearme automatiquement à chaque `npm install`.
 
 Conséquences à respecter :
@@ -224,7 +233,7 @@ Checklist finale :
 - [ ] Aucun nombre magique introduit
 - [ ] Aucun composant n'appelle une API du navigateur directement
 - [ ] Les fichiers remplacés ont été supprimés, pas laissés à côté
-- [ ] `LISEZ-MOI.md` mis à jour si la structure ou l'usage a changé
+- [ ] `README.md` mis à jour si la structure ou l'usage a changé
 - [ ] Ce qui n'a pas pu être vérifié est dit explicitement (ex. le micro, qui
       demande une autorisation de l'utilisateur)
 

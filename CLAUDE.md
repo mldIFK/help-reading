@@ -2,7 +2,7 @@
 
 Application d'aide aux devoirs d'anglais pour une enfant de primaire (CP/CE1).
 React + Vite, sans backend : voix et micro fournis par le navigateur, données
-stockées sur l'appareil. Voir `LISEZ-MOI.md` pour l'usage et la structure.
+stockées sur l'appareil. Voir `README.md` pour l'usage et la structure.
 
 ## Avant de toucher au code
 

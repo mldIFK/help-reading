@@ -1,8 +1,13 @@
 #!/bin/sh
 #
-# Refuse le commit tant que la suite de tests n'est pas verte.
+# Refuse le commit tant que la suite de tests n'est pas verte et que le projet
+# ne compile pas.
 #
-# Ce garde-fou est la contrepartie mecanique de la regle TDD decrite dans
+# Les deux verifications sont complementaires : les tests couvrent les regles
+# metier, la compilation attrape ce qu'aucun test n'importe — typiquement une
+# erreur de syntaxe dans un ecran purement visuel.
+#
+# Ce garde-fou est la contrepartie mecanique des regles decrites dans
 # .claude/skills/regles-de-code/SKILL.md : les regles ecrites s'oublient, un
 # commit refuse, non.
 #
@@ -15,31 +20,32 @@ set -e
 repository_root=$(git rev-parse --show-toplevel)
 cd "$repository_root"
 
-if [ ! -d node_modules ]; then
+refuse_commit() {
   echo ""
-  echo "COMMIT REFUSE : les dependances ne sont pas installees."
-  echo "Lance d'abord : npm install"
+  echo "=================================================================="
+  echo " COMMIT REFUSE : $1"
+  echo ""
+  echo " Corrige le probleme, puis recommence le commit."
+  echo " Regles du projet : .claude/skills/regles-de-code/SKILL.md"
+  echo "=================================================================="
   echo ""
   exit 1
+}
+
+if [ ! -d node_modules ]; then
+  refuse_commit "les dependances ne sont pas installees (lance : npm install)."
 fi
 
 echo ""
-echo "Verification de la suite de tests avant commit..."
+echo "--- 1/2  Suite de tests ---------------------------------------"
 echo ""
-
-if npm test; then
-  echo ""
-  echo "Tests verts : commit autorise."
-  echo ""
-  exit 0
-fi
+npm test || refuse_commit "des tests echouent."
 
 echo ""
-echo "=================================================================="
-echo " COMMIT REFUSE : des tests echouent."
+echo "--- 2/2  Compilation du projet --------------------------------"
 echo ""
-echo " Corrige-les, puis recommence le commit."
-echo " Regles du projet : .claude/skills/regles-de-code/SKILL.md"
-echo "=================================================================="
+npm run build || refuse_commit "la compilation echoue."
+
 echo ""
-exit 1
+echo "Tests verts et compilation reussie : commit autorise."
+echo ""

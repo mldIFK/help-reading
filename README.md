@@ -158,10 +158,16 @@ La logique métier (`src/lib`) est entièrement testée sans navigateur. Les deu
 écrans porteurs de règles — la dictée et l'éditeur de leçons — ont des tests
 d'interface qui simulent une vraie utilisation.
 
-### Le commit est bloqué si un test échoue
+### Le commit est bloqué si un test échoue ou si le build casse
 
-`.githooks/pre-commit` lance la suite de tests avant chaque commit et le refuse
-si quoi que ce soit est rouge.
+`.githooks/pre-commit` lance deux vérifications avant chaque commit et le refuse
+si l'une des deux échoue :
+
+1. `npm test` — les 151 tests doivent être verts ;
+2. `npm run build` — le projet doit compiler.
+
+La seconde n'est pas redondante : une erreur de syntaxe dans un écran qu'aucun
+test n'importe laisse toute la suite verte, et seul le build l'attrape.
 
 Le hook est versionné avec le projet (contrairement à `.git/hooks`, qui n'est
 jamais cloné) et activé par `core.hooksPath`. Le script `prepare` de
