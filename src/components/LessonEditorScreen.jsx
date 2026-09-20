@@ -4,7 +4,10 @@ import {
   parseVocabularyFromText,
   summariseVocabulary,
 } from '../lib/lessons/lessonParsing.js'
+import { extractVocabularyFromReadingText } from '../lib/lessons/lessonContent.js'
 import { createLessonIdentifier } from '../lib/storage/lessonRepository.js'
+import LessonImportField from './LessonImportField.jsx'
+import VocabularyWordRecordings from './VocabularyWordRecordings.jsx'
 
 /**
  * Saisie des devoirs de la semaine par le parent.
@@ -18,7 +21,7 @@ const LESSON_PICTURES = ['📝', '📖', '🐶', '🍎', '🎨', '🔢', '🎒',
 
 const VOCABULARY_PLACEHOLDER = ['cat = chat', 'dog = chien', 'house = maison'].join('\n')
 
-export default function LessonEditorScreen({ lesson, onSave, onCancel }) {
+export default function LessonEditorScreen({ lesson, onSave, onCancel, wordRecordings }) {
   const [title, setTitle] = useState(lesson?.title ?? '')
   const [picture, setPicture] = useState(lesson?.emoji ?? LESSON_PICTURES[0])
   const [vocabularyText, setVocabularyText] = useState(
@@ -26,9 +29,17 @@ export default function LessonEditorScreen({ lesson, onSave, onCancel }) {
   )
   const [readingText, setReadingText] = useState(lesson?.readingText ?? '')
 
+  /**
+   * Tant que cette liste n'a pas ete touchee a la main, elle suit le texte au
+   * fil de la saisie : c'est ce qui evite au parent de ressaisir les mots. Des
+   * qu'il ecrit lui-meme dans le champ, elle lui appartient et le texte ne la
+   * remplace plus — y compris pour une lecon deja enregistree, rouverte avec sa
+   * propre liste.
+   */
+  const [hasCustomVocabulary, setHasCustomVocabulary] = useState(Boolean(lesson))
+
   const vocabulary = parseVocabularyFromText(vocabularyText)
-  const hasSomethingToWorkOn = vocabulary.length > 0 || readingText.trim().length > 0
-  const canBeSaved = title.trim().length > 0 && hasSomethingToWorkOn
+  const canBeSaved = title.trim().length > 0 && readingText.trim().length > 0
 
   const save = () => {
     if (!canBeSaved) return
@@ -43,12 +54,46 @@ export default function LessonEditorScreen({ lesson, onSave, onCancel }) {
     })
   }
 
+  const updateReadingText = (newReadingText) => {
+    setReadingText(newReadingText)
+
+    if (!hasCustomVocabulary) {
+      setVocabularyText(formatVocabularyAsText(extractVocabularyFromReadingText(newReadingText)))
+    }
+  }
+
+  const updateVocabularyText = (newVocabularyText) => {
+    setHasCustomVocabulary(true)
+    setVocabularyText(newVocabularyText)
+  }
+
+  /**
+   * Un fichier importe remplit les champs sans rien enregistrer : le parent
+   * garde la main pour corriger ce que la reconnaissance a mal decoupe.
+   */
+  const applyImportedLesson = (importedLesson) => {
+    const hasImportedVocabulary = importedLesson.vocabulary.length > 0
+
+    setTitle(importedLesson.title)
+    setReadingText(importedLesson.readingText)
+    setVocabularyText(
+      formatVocabularyAsText(
+        hasImportedVocabulary
+          ? importedLesson.vocabulary
+          : extractVocabularyFromReadingText(importedLesson.readingText)
+      )
+    )
+    setHasCustomVocabulary(hasImportedVocabulary)
+  }
+
   return (
     <>
       <div className="notice">
-        👨‍👩‍👧 <strong>Pour le parent.</strong> Recopie ici la liste de mots ou le texte du cahier.
-        Tout reste sur cet appareil.
+        👨‍👩‍👧 <strong>Pour le parent.</strong> Importe le fichier des devoirs, ou recopie le texte
+        du cahier — l'appli en tire elle-même les mots à pratiquer. Tout reste sur cet appareil.
       </div>
+
+      <LessonImportField onLessonImported={applyImportedLesson} />
 
       <div className="card">
         <div className="field">
@@ -82,13 +127,29 @@ export default function LessonEditorScreen({ lesson, onSave, onCancel }) {
         </fieldset>
 
         <div className="field">
+          <label htmlFor="lesson-reading-text">Texte à lire</label>
+          <textarea
+            id="lesson-reading-text"
+            value={readingText}
+            onChange={(event) => updateReadingText(event.target.value)}
+            placeholder="Hello! My name is Lucy. I have a cat."
+            required
+            lang="en"
+            spellCheck="true"
+          />
+        </div>
+
+        <div className="field">
           <label htmlFor="lesson-vocabulary">
             Liste de mots — un par ligne, format <code>anglais = français</code>
           </label>
+          <p className="muted">
+            Remplie automatiquement à partir du texte : corrige-la ou ajoute les traductions.
+          </p>
           <textarea
             id="lesson-vocabulary"
             value={vocabularyText}
-            onChange={(event) => setVocabularyText(event.target.value)}
+            onChange={(event) => updateVocabularyText(event.target.value)}
             placeholder={VOCABULARY_PLACEHOLDER}
             spellCheck="false"
           />
@@ -97,16 +158,7 @@ export default function LessonEditorScreen({ lesson, onSave, onCancel }) {
           )}
         </div>
 
-        <div className="field">
-          <label htmlFor="lesson-reading-text">Texte à lire (facultatif)</label>
-          <textarea
-            id="lesson-reading-text"
-            value={readingText}
-            onChange={(event) => setReadingText(event.target.value)}
-            placeholder="Hello! My name is Lucy. I have a cat."
-            spellCheck="false"
-          />
-        </div>
+        <VocabularyWordRecordings vocabulary={vocabulary} wordRecordings={wordRecordings} />
 
         <div className="row">
           <button className="btn green" onClick={save} disabled={!canBeSaved}>

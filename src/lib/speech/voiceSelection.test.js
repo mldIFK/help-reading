@@ -24,6 +24,24 @@ describe('selectEnglishVoices', () => {
     expect(ordered[0]).toBe(britishVoice)
   })
 
+  it('prefers a natural-sounding voice over an older one of the same accent', () => {
+    const oldBritishVoice = voice('Google UK English Female', 'en-GB')
+    const naturalBritishVoice = voice('Microsoft Sonia Online (Natural)', 'en-GB')
+
+    const ordered = selectEnglishVoices([oldBritishVoice, naturalBritishVoice], 'en-GB')
+
+    expect(ordered[0]).toBe(naturalBritishVoice)
+  })
+
+  it('keeps the chosen accent ahead of a natural voice of another accent', () => {
+    const britishVoice = voice('Google UK English Female', 'en-GB')
+    const naturalAmericanVoice = voice('Microsoft Aria Online (Natural)', 'en-US')
+
+    const ordered = selectEnglishVoices([naturalAmericanVoice, britishVoice], 'en-GB')
+
+    expect(ordered[0]).toBe(britishVoice)
+  })
+
   it('keeps the other English accents as a fallback', () => {
     const ordered = selectEnglishVoices([australianVoice, americanVoice], 'en-GB')
 

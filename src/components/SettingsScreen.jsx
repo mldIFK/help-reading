@@ -1,6 +1,11 @@
 import { EXERCISE_TYPE } from '../lib/exerciseTypes.js'
 import { isSpeechRecognitionAvailable } from '../lib/speech/speechRecognitionService.js'
 import { isSpeechSynthesisAvailable } from '../lib/speech/speechSynthesisService.js'
+import {
+  isNaturalSoundingVoice,
+  isRunningOnEdge,
+  shouldSuggestAnotherBrowser,
+} from '../lib/speech/voiceQuality.js'
 import { clearProgress } from '../lib/storage/progressRepository.js'
 
 /**
@@ -27,9 +32,21 @@ export default function SettingsScreen({
   progress,
   onChangeSettings,
   onProgressCleared,
+  onOpenVoiceStudio,
 }) {
   return (
     <>
+      <section className="card">
+        <h2 className="section">🎙️ Voix enregistrée par une personne</h2>
+        <p className="muted">
+          Plutôt qu’une voix de synthèse, l’application peut reconstituer les mots à partir des
+          sons de l’anglais enregistrés par un adulte anglophone.
+        </p>
+        <button className="btn" onClick={onOpenVoiceStudio}>
+          🎙️ Ouvrir le studio de voix
+        </button>
+      </section>
+
       <section className="card">
         <h2 className="section">🇬🇧 Accent</h2>
         <div className="seg">
@@ -60,15 +77,19 @@ export default function SettingsScreen({
             {englishVoices.length === 0 && <option value="">Aucune voix anglaise installée</option>}
             {englishVoices.map((voice) => (
               <option key={voice.voiceURI} value={voice.voiceURI}>
+                {isNaturalSoundingVoice(voice) ? '⭐ ' : ''}
                 {voice.name} ({voice.lang}) {voice.localService ? '— hors-ligne' : '— en ligne'}
               </option>
             ))}
           </select>
           <p className="muted">
-            Les voix « en ligne » (Google) sonnent mieux mais ont besoin d’internet. Les voix
-            « hors-ligne » (Microsoft) marchent partout et permettent le surlignage du mot lu.
+            ⭐ signale une voix <strong>naturelle</strong> : c’est celle qui ressemble le plus à une
+            vraie personne, et donc le meilleur modèle à imiter. Les voix « hors-ligne » marchent
+            sans internet et permettent le surlignage du mot lu.
           </p>
         </div>
+
+        <BetterVoicesAdvice englishVoices={englishVoices} />
 
         <div className="field">
           <label htmlFor="reading-speed">
@@ -139,6 +160,28 @@ export default function SettingsScreen({
       <ProgressReport progress={progress} onProgressCleared={onProgressCleared} />
       <DeviceReport englishVoices={englishVoices} />
     </>
+  )
+}
+
+/**
+ * Conseil affiche quand l'appareil n'offre que des voix d'ancienne generation.
+ *
+ * Changer de navigateur donne acces a des voix bien meilleures sans rien
+ * installer : c'est de loin la solution la plus simple, et la seule que le
+ * parent puisse appliquer en deux minutes.
+ */
+function BetterVoicesAdvice({ englishVoices }) {
+  const isAlreadyOnEdge = isRunningOnEdge(navigator.userAgent)
+
+  if (!shouldSuggestAnotherBrowser({ voices: englishVoices, isAlreadyOnEdge })) return null
+
+  return (
+    <p className="notice">
+      🗣️ <strong>Les voix de ce navigateur sonnent mécaniques.</strong> Ouvre la même adresse dans{' '}
+      <strong>Microsoft Edge</strong> : il propose des voix anglaises naturelles (Sonia, Libby,
+      Ryan), bien plus proches d’une vraie personne. Rien à installer, rien à changer dans
+      l’application — elles apparaîtront ici avec une ⭐.
+    </p>
   )
 }
 

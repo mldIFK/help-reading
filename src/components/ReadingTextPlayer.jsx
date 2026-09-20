@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { TOKEN_KIND } from '../lib/text/textSegmentation.js'
+import { TOKEN_KIND, splitIntoWords } from '../lib/text/textSegmentation.js'
 import { buildReadingScript, findWordIndexAtCharacter } from '../lib/text/readingScript.js'
 import { useCancellableSpeechSequence } from '../hooks/useCancellableSpeechSequence.js'
 
@@ -17,8 +17,14 @@ const PAUSE_BETWEEN_SENTENCES_MS = 500
 const NO_WORD_HIGHLIGHTED = -1
 const NO_SENTENCE_HIGHLIGHTED = -1
 
-export default function ReadingTextPlayer({ lesson, speechPlayer, settings }) {
+export default function ReadingTextPlayer({ lesson, speechPlayer, settings, wordRecordings }) {
   const readingScript = useMemo(() => buildReadingScript(lesson.readingText), [lesson.readingText])
+
+  const hasAnyRecordedWord = useMemo(
+    () => splitIntoWords(lesson.readingText).some((word) => wordRecordings.hasRecording(word)),
+    [lesson.readingText, wordRecordings]
+  )
+  const [usesRecordedVoice, setUsesRecordedVoice] = useState(true)
 
   const [highlightedWordIndex, setHighlightedWordIndex] = useState(NO_WORD_HIGHLIGHTED)
   const [highlightedSentenceIndex, setHighlightedSentenceIndex] = useState(NO_SENTENCE_HIGHLIGHTED)
@@ -46,7 +52,10 @@ export default function ReadingTextPlayer({ lesson, speechPlayer, settings }) {
           sequence.throwIfCancelled()
           setHighlightedWordIndex(wordIndex)
 
-          await speechPlayer.speak(readingScript.spokenWords[wordIndex], { slowly: true })
+          await speechPlayer.speak(readingScript.spokenWords[wordIndex], {
+            slowly: true,
+            useRecordedVoice: usesRecordedVoice,
+          })
           await sequence.pause(settings.pauseBetweenWordsMs)
         }
       } finally {
@@ -69,6 +78,7 @@ export default function ReadingTextPlayer({ lesson, speechPlayer, settings }) {
           setHighlightedWordIndex(NO_WORD_HIGHLIGHTED)
 
           await speechPlayer.speak(sentence.text, {
+            useRecordedVoice: usesRecordedVoice,
             onWordBoundary: (characterPosition) =>
               setHighlightedWordIndex(
                 findWordIndexAtCharacter(sentence, characterPosition) ?? NO_WORD_HIGHLIGHTED
@@ -86,7 +96,7 @@ export default function ReadingTextPlayer({ lesson, speechPlayer, settings }) {
 
     setHighlightedWordIndex(wordToken.wordIndex)
     speechPlayer
-      .speak(wordToken.text, { slowly: true })
+      .speak(wordToken.text, { slowly: true, useRecordedVoice: usesRecordedVoice })
       .catch(ignoreSpeechFailure)
       .finally(() =>
         setHighlightedWordIndex((highlighted) =>
@@ -97,6 +107,25 @@ export default function ReadingTextPlayer({ lesson, speechPlayer, settings }) {
 
   return (
     <>
+      {hasAnyRecordedWord && (
+        <div className="seg">
+          <button
+            type="button"
+            className={usesRecordedVoice ? 'on' : ''}
+            onClick={() => setUsesRecordedVoice(true)}
+          >
+            🎙️ Ma voix
+          </button>
+          <button
+            type="button"
+            className={usesRecordedVoice ? '' : 'on'}
+            onClick={() => setUsesRecordedVoice(false)}
+          >
+            🔊 Voix automatique
+          </button>
+        </div>
+      )}
+
       <div className="card">
         <div className="reader">
           {readingScript.sentences.map((sentence, sentenceIndex) => (

@@ -650,6 +650,113 @@ button {
   margin: 8px 0;
 }
 
+/* --------------------------- Import de fichier --------------------------- */
+
+.import-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 16px;
+  text-align: center;
+  border: 3px dashed var(--field-border);
+  border-radius: 18px;
+  transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.import-zone.hovered {
+  border-color: var(--primary);
+  background: var(--primary-tint);
+}
+
+.import-zone-hint {
+  margin: 0;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+/* Le champ reste accessible au clavier et aux lecteurs d'ecran, mais le clic
+   passe par le bouton, seul element visible. */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* --------------------------- Studio de voix ------------------------------ */
+
+.progress-track {
+  height: 16px;
+  background: var(--field-border);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.progress-filled {
+  height: 100%;
+  background: var(--success);
+  transition: width 0.2s ease;
+}
+
+.recording-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.recording-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  border-radius: 14px;
+  border: 3px solid var(--field-border);
+  flex-wrap: wrap;
+}
+
+.recording-row.recorded {
+  border-color: var(--success);
+  background: var(--success-tint);
+}
+
+.phoneme-symbol {
+  font-size: 1.6rem;
+  font-weight: bold;
+  min-width: 2.2em;
+  text-align: center;
+}
+
+.recording-text {
+  flex: 1;
+  min-width: 150px;
+}
+
+.phoneme-example {
+  display: block;
+  font-weight: bold;
+}
+
+.phoneme-hint {
+  display: block;
+  color: var(--text-soft);
+  font-size: 0.85rem;
+}
+
+.recording-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
 /* ------------------------------ Messages --------------------------------- */
 
 .notice {

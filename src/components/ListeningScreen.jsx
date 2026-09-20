@@ -12,7 +12,7 @@ import ReadingTextPlayer from './ReadingTextPlayer.jsx'
 
 const CONTENT = { vocabulary: 'vocabulary', readingText: 'readingText' }
 
-export default function ListeningScreen({ lesson, speechPlayer, settings }) {
+export default function ListeningScreen({ lesson, speechPlayer, settings, wordRecordings }) {
   const lessonHasVocabulary = hasVocabulary(lesson)
   const lessonHasReadingText = hasReadingText(lesson)
 
@@ -48,7 +48,12 @@ export default function ListeningScreen({ lesson, speechPlayer, settings }) {
       {showsVocabulary ? (
         <VocabularyFlashcards lesson={lesson} speechPlayer={speechPlayer} settings={settings} />
       ) : (
-        <ReadingTextPlayer lesson={lesson} speechPlayer={speechPlayer} settings={settings} />
+        <ReadingTextPlayer
+          lesson={lesson}
+          speechPlayer={speechPlayer}
+          settings={settings}
+          wordRecordings={wordRecordings}
+        />
       )}
     </>
   )

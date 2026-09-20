@@ -58,7 +58,46 @@ Dans le mode **Écouter** :
 
 Sur l'écran d'accueil : **➕ Ajouter les devoirs de la semaine**.
 
-- **Liste de mots** : une ligne par mot, au format `anglais = français`
+### Importer un fichier
+
+Dépose le fichier des devoirs dans la zone d'import, ou choisis-le sur
+l'appareil. Formats reconnus :
+
+| Format | Usage |
+|---|---|
+| `.txt` `.md` | Texte de lecture, liste de mots, ou les deux |
+| `.csv` `.tsv` | Tableau de vocabulaire, y compris un export Excel français (`;`) |
+| `.pdf` | Devoir envoyé par l'école, à condition qu'il contienne du texte |
+| `.docx` | Document Word |
+
+Le format est reconnu **au contenu du fichier**, pas à son nom : un fichier
+téléchargé sans extension ou un document renommé sont acceptés tels quels.
+Une photo n'est pas prise en charge : un `PDF` scanné ou une image doit être
+recopié à la main.
+
+L'appli sépare toute seule **la liste de vocabulaire du texte à lire**, et tire
+le titre de la leçon du nom du fichier. Rien n'est enregistré directement : les
+champs sont pré-remplis, tu relis et corriges avant de valider — la
+reconnaissance propose, elle ne décide pas. Le texte à lire étant obligatoire,
+un fichier qui n'apporte qu'une liste de mots (un tableau, par exemple) ne
+rend la leçon enregistrable qu'une fois un texte ajouté à la main.
+
+### Saisir à la main
+
+- **Texte à lire** (obligatoire) : recopiez le texte du cahier. Le correcteur
+  d'orthographe du navigateur souligne les mots qu'il ne reconnaît pas comme
+  anglais.
+
+  > Si des mots anglais corrects sont soulignés, c'est que le navigateur ne
+  > vérifie qu'une autre langue (souvent le français, réglé par défaut). Dans
+  > Chrome : **Paramètres → Langues** → ajoutez l'anglais et activez
+  > « Vérifier l'orthographe » pour cette langue — ou activez le
+  > **correcteur enrichi** (« Enhanced spell check »), qui détecte la langue
+  > de chaque champ tout seul. Aucun réglage du site ne peut le faire à la
+  > place du navigateur.
+- **Liste de mots** : remplie automatiquement à partir du texte dès que vous
+  le tapez, un mot par ligne. Corrigez-la et ajoutez les traductions au format
+  `anglais = français` :
 
   ```
   cat = chat
@@ -66,7 +105,21 @@ Sur l'écran d'accueil : **➕ Ajouter les devoirs de la semaine**.
   house = maison
   ```
 
-- **Texte à lire** : recopiez simplement le texte du cahier.
+  Dès que vous modifiez cette liste à la main, elle n'est plus recalculée à
+  partir du texte : vos corrections sont conservées.
+
+- **Voix humaine par mot** (facultatif) : sous la liste de mots, un bouton
+  🎙️ **Enregistrer** par mot permet à un adulte anglophone d'enregistrer sa
+  propre prononciation. Dès qu'un mot est enregistré, cette voix remplace la
+  synthèse **partout** où le mot est prononcé (Écouter, Lire à voix haute,
+  Dictée) — pour les autres mots, la synthèse continue de parler normalement.
+  L'enregistrement reste sur l'appareil et demande le micro (HTTPS ou
+  `localhost`, comme pour « Lire tout haut »).
+
+  Dans **Écouter → Le texte**, dès qu'un mot de la leçon a un enregistrement,
+  un choix apparaît au-dessus du texte : **🎙️ Ma voix** (utilise les
+  enregistrements, par défaut) ou **🔊 Voix automatique** (ignore les
+  enregistrements et lit tout en synthèse).
 
 La leçon est enregistrée sur l'appareil et réutilisable dans les trois modes.
 Les leçons personnelles peuvent être modifiées (✏️) ou supprimées (🗑️) depuis
@@ -86,6 +139,45 @@ l'écran « Choisir une leçon ».
 - **Vitesse** : 0,7 à 0,9 est idéal pour débuter.
 - **Pause entre les mots**, **traduction affichée ou cachée**, **remise à zéro des étoiles**.
 - Un **diagnostic** en bas indique si la lecture, le micro et l'HTTPS sont disponibles.
+
+### Obtenir une voix qui ne sonne pas robotique
+
+L'application n'invente pas de voix : elle utilise **celles du navigateur**.
+Leur qualité varie énormément, et c'est le navigateur — pas l'application — qui
+détermine ce qui est disponible.
+
+| Navigateur | Voix anglaises proposées |
+|---|---|
+| **Edge** | Voix **naturelles** Microsoft (Sonia, Libby, Ryan…) — très proches d'une vraie personne |
+| Chrome | Voix Google d'ancienne génération, mécaniques |
+| Safari | Voix système Apple, correctes |
+
+**Le plus simple pour bien sonner : ouvrir la même adresse dans Microsoft Edge.**
+Rien à installer, rien à changer dans l'application.
+
+Dans ⚙️ Réglages, les voix naturelles sont signalées par une **⭐**, et
+l'application choisit automatiquement la meilleure de l'accent demandé. Si elle
+ne trouve que de vieilles voix, elle le signale et conseille Edge.
+
+### Voix enregistrée par une personne (studio de voix)
+
+⚙️ Réglages → **🎙️ Ouvrir le studio de voix**.
+
+L'application peut reconstituer les mots à partir des **45 sons de l'anglais
+britannique**, enregistrés au micro par un adulte anglophone. Chaque son est
+présenté avec un mot d'exemple et une explication en français.
+
+Une fois les 45 sons enregistrés, l'application sait prononcer n'importe lequel
+des **65 000 mots** de son dictionnaire de prononciation britannique — sans
+connexion, et sans que rien ne quitte l'appareil.
+
+**Avant de faire enregistrer quelqu'un**, utilise le banc d'essai
+(*🔊 Écouter le rendu*) : enregistre les sons rapidement toi-même, même mal, et
+écoute ce que donne un mot entier. Enchaîner des sons enregistrés isolément peut
+sonner haché — c'est la limite connue du procédé, et il vaut mieux la constater
+en dix minutes qu'après une séance d'enregistrement complète.
+
+Le studio a besoin du micro : page en `https://` ou sur `localhost`.
 
 ### Si aucune voix anglaise n'est trouvée (Windows)
 

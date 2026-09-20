@@ -2,6 +2,11 @@ node_modules/
 dist/
 coverage/
 
+# Dictionnaire de prononciation : 1,7 Mo regenere depuis node_modules par
+# `npm run pronunciation-dictionary`, lance a l'installation et avant chaque
+# demarrage. Rien a versionner.
+public/pronunciation/
+
 # Journaux et fichiers temporaires
 *.log
 npm-debug.log*

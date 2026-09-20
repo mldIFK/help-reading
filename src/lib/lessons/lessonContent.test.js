@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import {
+  extractVocabularyFromReadingText,
   hasReadingText,
   hasVocabulary,
   listDictationWords,
@@ -84,5 +85,20 @@ describe('listDictationWords', () => {
 
   it('returns nothing for an empty lesson', () => {
     expect(listDictationWords({})).toEqual([])
+  })
+})
+
+describe('extractVocabularyFromReadingText', () => {
+  it('proposes the distinct words of the text, without a translation', () => {
+    expect(extractVocabularyFromReadingText('I have a cat. My cat is black.')).toEqual([
+      { english: 'have', french: '' },
+      { english: 'cat', french: '' },
+      { english: 'black', french: '' },
+    ])
+  })
+
+  it('returns nothing for an empty text', () => {
+    expect(extractVocabularyFromReadingText('')).toEqual([])
+    expect(extractVocabularyFromReadingText(null)).toEqual([])
   })
 })

@@ -45,7 +45,16 @@ export function listDictationWords(lesson) {
   if (hasVocabulary(lesson)) return listVocabulary(lesson)
   if (!hasReadingText(lesson)) return []
 
-  return collectDistinctWordsWorthDictating(lesson.readingText).map((word) => ({
+  return extractVocabularyFromReadingText(lesson.readingText)
+}
+
+/**
+ * Propose une liste de vocabulaire a partir d'un texte de lecture, en
+ * pre-remplissage de l'editeur de lecon : les mots distincts, debarrasses des
+ * plus courts, chacun sans traduction — au parent de les completer.
+ */
+export function extractVocabularyFromReadingText(readingText) {
+  return collectDistinctWordsWorthDictating(readingText).map((word) => ({
     english: word,
     french: '',
   }))

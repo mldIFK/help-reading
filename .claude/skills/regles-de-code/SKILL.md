@@ -217,6 +217,45 @@ n'en a pas, c'est probablement qu'il fait deux choses.
 - **Ne jamais casser un exercice pour en réparer un autre.** Les trois modes
   partagent `lib/` : une modification de `pronunciationScoring` ou de
   `textSegmentation` se répercute partout — lancer toute la suite, pas un fichier.
+- **pdf.js : utiliser la build `legacy`** (`pdfjs-dist/legacy/build/pdf.mjs`).
+  Depuis la 5.x, la build courante appelle `Uint8Array.prototype.toHex`, absente
+  avant Chrome 140 — une tablette n'est pas toujours à jour.
+- **mammoth : importer le paquet `mammoth`**, jamais `mammoth/mammoth.browser.js`.
+  Seule la résolution normale applique le champ `browser` qui substitue les
+  modules de décompression ; le bundle autonome laisse la lecture en suspens,
+  sans jamais échouer ni lever d'erreur.
+- **Les bibliothèques de documents sont chargées à la demande** (`await import`)
+  et pèsent plus lourd que toute l'application. Ne jamais les importer en haut
+  d'un module : le démarrage de l'appli s'en trouverait alourdi pour une
+  fonction que la plupart des séances n'utilisent pas.
+- **Un caractère invisible n'est pas une faute d'orthographe.** Le texte venu
+  d'un PDF ou d'un tableur contient des espaces insécables et des marques
+  d'ordre des octets ; `cleanImportedText` doit être appliqué avant toute
+  comparaison, sinon un mot juste est compté faux.
+- **`Set-Content -Encoding UTF8` de PowerShell 5.1 ajoute un BOM.** Un BOM en
+  tête de `package.json` casse tout l'outillage avec un message obscur. Écrire
+  les fichiers avec les outils d'édition, ou `[IO.File]::WriteAllText` et un
+  `UTF8Encoding($false)`.
+- **Le dictionnaire de prononciation et l'inventaire des sons doivent rester
+  cohérents.** Un test confronte les deux (`britishPhonemes.test.js`) : tout
+  symbole employé par le dictionnaire doit figurer dans la liste à enregistrer,
+  sinon un mot devient impossible à prononcer. Le script de génération refuse
+  d'ailleurs une transcription manuscrite contenant un symbole inconnu.
+- **Enchaîner des extraits audio exige de les nettoyer.** Un son enregistré
+  traîne du silence avant et après ; collés tels quels, ces silences
+  s'additionnent et le rendu devient haché. Rogner les silences de bord, amorcer
+  depuis zéro (sinon claquement), et programmer les extraits sur l'horloge audio
+  plutôt que de les déclencher par minuterie.
+- **Ne jamais identifier un fichier par son seul nom.** Un téléchargement perd
+  parfois toute extension, un fichier renommé garde l'ancienne. L'ordre à
+  respecter : extension connue → **premiers octets du fichier**
+  (`fileSignatures.js`). Un contrôle fondé sur le nom refuse des devoirs
+  parfaitement lisibles.
+- **L'import de photos a été retiré : la reconnaissance de caractères
+  embarquée n'était pas fiable.** Une image reste un format non pris en
+  charge — ne pas la réintroduire sans en discuter avec l'utilisatrice, et si
+  elle revient, exclure ses signatures binaires (JPEG, PNG…) du repli « texte »
+  de `fileSignatures.js` : leurs octets élevés passent sinon pour de l'UTF-8.
 
 ---
 

@@ -10,6 +10,7 @@ import {
 import { loadProgress, recordCompletedExercise } from './lib/storage/progressRepository.js'
 import { loadSettings, saveSettings } from './lib/storage/settingsRepository.js'
 import { useSpeechPlayer } from './hooks/useSpeechPlayer.js'
+import { useWordRecordings } from './hooks/useWordRecordings.js'
 import AppHeader from './components/AppHeader.jsx'
 import DictationScreen from './components/DictationScreen.jsx'
 import HomeScreen from './components/HomeScreen.jsx'
@@ -18,6 +19,7 @@ import LessonPickerScreen from './components/LessonPickerScreen.jsx'
 import ListeningScreen from './components/ListeningScreen.jsx'
 import ReadAloudScreen from './components/ReadAloudScreen.jsx'
 import SettingsScreen from './components/SettingsScreen.jsx'
+import VoiceStudioScreen from './components/VoiceStudioScreen.jsx'
 
 /**
  * Racine de l'application : garde l'etat partage (lecon en cours, reglages,
@@ -30,6 +32,7 @@ const SCREEN = {
   lessonPicker: 'lessonPicker',
   lessonEditor: 'lessonEditor',
   settings: 'settings',
+  voiceStudio: 'voiceStudio',
   ...EXERCISE_TYPE,
 }
 
@@ -38,6 +41,7 @@ const SCREEN_TITLES = {
   [SCREEN.lessonPicker]: 'Choisir une leçon',
   [SCREEN.lessonEditor]: 'Ajouter les devoirs',
   [SCREEN.settings]: 'Réglages',
+  [SCREEN.voiceStudio]: 'Studio de voix',
   [SCREEN.listening]: 'Écouter',
   [SCREEN.readAloud]: 'Lire à voix haute',
   [SCREEN.dictation]: 'Dictée',
@@ -54,6 +58,7 @@ export default function App() {
   )
 
   const { speechPlayer, englishVoices } = useSpeechPlayer(settings)
+  const wordRecordings = useWordRecordings()
 
   const allLessons = useMemo(
     () => [...parentLessons, ...BUILT_IN_LESSONS],
@@ -161,19 +166,32 @@ export default function App() {
         )}
 
         {currentScreen === SCREEN.lessonEditor && (
-          <LessonEditorScreen lesson={lessonBeingEdited} onSave={saveLesson} onCancel={goHome} />
+          <LessonEditorScreen
+            lesson={lessonBeingEdited}
+            onSave={saveLesson}
+            onCancel={goHome}
+            wordRecordings={wordRecordings}
+          />
         )}
 
         {currentScreen === SCREEN.listening && (
-          <ListeningScreen lesson={selectedLesson} speechPlayer={speechPlayer} settings={settings} />
+          <ListeningScreen
+            lesson={selectedLesson}
+            speechPlayer={speechPlayer}
+            settings={settings}
+            wordRecordings={wordRecordings}
+          />
         )}
 
         {currentScreen === SCREEN.readAloud && <ReadAloudScreen {...exerciseProps} />}
 
         {currentScreen === SCREEN.dictation && <DictationScreen {...exerciseProps} />}
 
+        {currentScreen === SCREEN.voiceStudio && <VoiceStudioScreen />}
+
         {currentScreen === SCREEN.settings && (
           <SettingsScreen
+            onOpenVoiceStudio={() => goToScreen(SCREEN.voiceStudio)}
             settings={settings}
             englishVoices={englishVoices}
             activeVoice={speechPlayer.voice}
