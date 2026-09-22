@@ -1,0 +1,65 @@
+# Publie l'appli sur GitHub Pages a chaque poussee sur main, une fois la
+# verification du CI (tests + compilation) passee.
+#
+# GitHub Pages sert un fichier statique : comme l'appli n'a pas de backend,
+# c'est strictement le meme contenu que celui livre par `npm run build`.
+
+name: Deploiement GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Une nouvelle poussee remplace le deploiement en cours : publier une version
+# deja depassee n'aurait aucun sens.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  construire:
+    name: Construire le site
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Recuperer le code
+        uses: actions/checkout@v4
+
+      - name: Installer Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Installer les dependances
+        run: npm ci
+
+      - name: Suite de tests
+        run: npm test
+
+      - name: Compiler le site
+        run: npm run build
+
+      - name: Empaqueter le resultat
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  publier:
+    name: Publier sur GitHub Pages
+    needs: construire
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Publier
+        id: deployment
+        uses: actions/deploy-pages@v4
