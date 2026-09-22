@@ -7,6 +7,7 @@ import {
   shouldSuggestAnotherBrowser,
 } from '../lib/speech/voiceQuality.js'
 import { clearProgress } from '../lib/storage/progressRepository.js'
+import LessonVoiceBackupSection from './LessonVoiceBackupSection.jsx'
 
 /**
  * Reglages, destines au parent : accent, voix, vitesse, suivi des etoiles et
@@ -33,9 +34,12 @@ export default function SettingsScreen({
   onChangeSettings,
   onProgressCleared,
   onOpenVoiceStudio,
+  lessonVoiceBackup,
 }) {
   return (
     <>
+      <LessonVoiceBackupSection lessonVoiceBackup={lessonVoiceBackup} />
+
       <section className="card">
         <h2 className="section">🎙️ Voix enregistrée par une personne</h2>
         <p className="muted">

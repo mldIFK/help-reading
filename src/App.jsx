@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { BUILT_IN_LESSONS } from './lib/lessons/builtInLessons.js'
 import { EXERCISE_TYPE } from './lib/exerciseTypes.js'
 import { stopSpeaking } from './lib/speech/speechSynthesisService.js'
@@ -9,8 +9,10 @@ import {
 } from './lib/storage/lessonRepository.js'
 import { loadProgress, recordCompletedExercise } from './lib/storage/progressRepository.js'
 import { loadSettings, saveSettings } from './lib/storage/settingsRepository.js'
+import { requestPersistentStorage } from './lib/storage/persistentStorageRequest.js'
 import { useSpeechPlayer } from './hooks/useSpeechPlayer.js'
 import { useWordRecordings } from './hooks/useWordRecordings.js'
+import { useLessonVoiceBackup } from './hooks/useLessonVoiceBackup.js'
 import AppHeader from './components/AppHeader.jsx'
 import DictationScreen from './components/DictationScreen.jsx'
 import HomeScreen from './components/HomeScreen.jsx'
@@ -59,6 +61,11 @@ export default function App() {
 
   const { speechPlayer, englishVoices } = useSpeechPlayer(settings)
   const wordRecordings = useWordRecordings()
+  const lessonVoiceBackup = useLessonVoiceBackup({ onLessonsImported: setParentLessons })
+
+  useEffect(() => {
+    requestPersistentStorage()
+  }, [])
 
   const allLessons = useMemo(
     () => [...parentLessons, ...BUILT_IN_LESSONS],
@@ -199,6 +206,7 @@ export default function App() {
             progress={progress}
             onChangeSettings={changeSettings}
             onProgressCleared={setProgress}
+            lessonVoiceBackup={lessonVoiceBackup}
           />
         )}
       </main>

@@ -6,7 +6,11 @@
  * ailleurs dans l'application ou l'on compare des mots.
  */
 
-import { RECORDING_STORE, withRecordingStore } from './voiceRecordingDatabase.js'
+import {
+  RECORDING_STORE,
+  listAllRecordingsInStore,
+  withRecordingStore,
+} from './voiceRecordingDatabase.js'
 import { normalizeWordForComparison } from '../text/wordNormalization.js'
 
 const withStore = (mode, useStore) => withRecordingStore(RECORDING_STORE.words, mode, useStore)
@@ -32,4 +36,9 @@ export async function listRecordedWords() {
   const keys = await withStore('readonly', (store) => store.getAllKeys())
 
   return new Set(keys)
+}
+
+/** Tous les extraits, pour la sauvegarde. */
+export function loadAllWordRecordings() {
+  return listAllRecordingsInStore(RECORDING_STORE.words)
 }

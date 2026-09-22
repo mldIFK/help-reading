@@ -6,7 +6,11 @@
  * Tout reste sur l'appareil.
  */
 
-import { RECORDING_STORE, withRecordingStore } from '../voiceRecordingDatabase.js'
+import {
+  RECORDING_STORE,
+  listAllRecordingsInStore,
+  withRecordingStore,
+} from '../voiceRecordingDatabase.js'
 
 const withStore = (mode, useStore) => withRecordingStore(RECORDING_STORE.phonemes, mode, useStore)
 
@@ -30,13 +34,8 @@ export async function listRecordedPhonemes() {
 }
 
 /** Tous les extraits, pour les charger d'un coup avant de lire. */
-export async function loadAllRecordings() {
-  const [keys, blobs] = await Promise.all([
-    withStore('readonly', (store) => store.getAllKeys()),
-    withStore('readonly', (store) => store.getAll()),
-  ])
-
-  return new Map(keys.map((key, position) => [key, blobs[position]]))
+export function loadAllRecordings() {
+  return listAllRecordingsInStore(RECORDING_STORE.phonemes)
 }
 
 export async function deleteAllRecordings() {

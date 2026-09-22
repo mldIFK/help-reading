@@ -48,3 +48,13 @@ export async function withRecordingStore(storeName, mode, useStore) {
     database.close()
   }
 }
+
+/** Tous les enregistrements d'un magasin, cle a cle — pour la sauvegarde et le studio. */
+export async function listAllRecordingsInStore(storeName) {
+  const [keys, audioBlobs] = await Promise.all([
+    withRecordingStore(storeName, 'readonly', (store) => store.getAllKeys()),
+    withRecordingStore(storeName, 'readonly', (store) => store.getAll()),
+  ])
+
+  return new Map(keys.map((key, position) => [key, audioBlobs[position]]))
+}
