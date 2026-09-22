@@ -8,6 +8,23 @@ abonnement, aucune clé API**, et rien ne sort de l'appareil.
 
 ---
 
+## 0. Juste l'utiliser (parents, maîtresse)
+
+Rien à installer : ouvrir cette adresse dans un navigateur (Chrome, Edge ou Safari)
+suffit.
+
+**https://mldifk.github.io/help-reading/**
+
+Chaque appareil garde ses propres leçons et ses propres voix enregistrées, sur
+l'appareil lui-même — rien n'est partagé automatiquement entre les familles. Pour
+transmettre une leçon (la maîtresse aux parents, par exemple), voir
+**§3, Sauvegarde et partage**.
+
+La suite de ce document (§1 et suivants) s'adresse à qui veut faire tourner
+l'application soi-même, la modifier, ou tester sur une tablette via le wifi local.
+
+---
+
 ## 1. Lancer l'application
 
 Ouvrir un terminal dans ce dossier, puis :
@@ -127,6 +144,24 @@ l'écran « Choisir une leçon ».
 
 12 leçons sont déjà intégrées (couleurs, nombres, animaux, famille, nourriture,
 école, corps, jours, vêtements, premières phrases, une petite histoire…).
+
+### Sauvegarde et partage
+
+⚙️ Réglages → **💾 Sauvegarde et partage**.
+
+Comme rien n'est stocké ailleurs que sur l'appareil, un nettoyage du navigateur
+(ou un changement d'appareil) effacerait les leçons et les voix enregistrées.
+**⬇️ Sauvegarder dans un fichier** télécharge un fichier `.json` qui les contient
+toutes les deux — à ranger où l'on veut (ordinateur, clé USB, mail).
+**⬆️ Importer un fichier** restaure ce contenu sur un appareil, sans toucher aux
+réglages ni aux étoiles de celui-ci.
+
+C'est aussi comme ça que la maîtresse peut transmettre une leçon aux parents (ou
+un parent à un autre) sans aucun serveur : elle l'exporte, l'envoie par mail ou
+sur l'espace numérique de la classe, chacun l'importe chez soi.
+
+> Chaque famille garde ses propres réglages et ses propres étoiles : importer
+> une sauvegarde n'écrase jamais ça, seulement les leçons et les voix.
 
 ---
 
@@ -286,7 +321,15 @@ local, le CI rattrape ce qui l'aurait contourné (un `--no-verify`, un clone où
 `npm install` n'a pas encore armé le hook, une poussée depuis une autre
 machine).
 
-> ⚠️ Le CI ne s'exécute que si le dépôt est hébergé sur GitHub. Tant que le
-> dépôt reste purement local (aucun *remote* configuré), le fichier est en
-> place mais dormant — il n'y a rien à corriger, il s'activera tout seul au
-> premier `git push`.
+### Déploiement (GitHub Pages)
+
+Le dépôt est public sur GitHub (`github.com/mldIFK/help-reading`).
+`.github/workflows/deploy.yml` construit le site (après la même suite de
+tests) et le publie à chaque poussée sur `main`, à cette adresse fixe :
+
+**https://mldifk.github.io/help-reading/**
+
+C'est un site statique, sans backend : le fichier livré est exactement celui
+de `npm run build`. `vite.config.js` y ajoute le préfixe `/help-reading/`
+qu'exige un site de projet GitHub Pages — uniquement pour ce build-là,
+l'adresse locale (`npm run dev`/`tablette`) ne change pas.
