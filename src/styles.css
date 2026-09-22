@@ -8,34 +8,43 @@
    --------------------------------------------------------------- */
 
 :root {
-  --background-top: #fff8ee;
-  --background-bottom: #ffeedd;
+  /* Couleurs de l'identite visuelle de l'ecole de la fille (New School,
+     Lyon) : vert sapin et or sur fond ivoire. */
+  --brand-green: #0b4d3a;
+  --brand-green-dark: #073226;
+  --brand-green-tint: #e1ece6;
+  --brand-gold: #c6a15c;
+  --brand-gold-dark: #a3813f;
+  --brand-gold-tint: #f6ecd6;
+
+  --background-top: #fdfbf5;
+  --background-bottom: #f3e9d4;
   --card-background: #ffffff;
-  --text: #2b2b40;
-  --text-soft: #6b6b85;
-  --text-faint: #b6b6cc;
-  --field-border: #dfe2f5;
+  --text: #1c3931;
+  --text-soft: #5f7168;
+  --text-faint: #b7c3bc;
+  --field-border: #ddd3ba;
 
-  --primary: #5b6cff;
-  --primary-shadow: #4453d6;
-  --primary-tint: #eef0ff;
+  --primary: var(--brand-green);
+  --primary-shadow: var(--brand-green-dark);
+  --primary-tint: var(--brand-green-tint);
 
-  --success: #22bb77;
-  --success-shadow: #179c5f;
-  --success-tint: #d8f7e8;
-  --success-text: #0d6b41;
+  --success: #33a06c;
+  --success-shadow: #227a52;
+  --success-tint: #dcf3e7;
+  --success-text: #0f6b41;
 
-  --danger: #ff5d6c;
-  --danger-shadow: #d84250;
-  --danger-tint: #ffe1e4;
-  --danger-text: #a71d2a;
+  --danger: #d9564a;
+  --danger-shadow: #b03d33;
+  --danger-tint: #fbe3e0;
+  --danger-text: #96271d;
 
-  --warning: #ffb300;
-  --warning-shadow: #d69400;
-  --warning-tint: #fff2d0;
-  --warning-text: #7a5200;
+  --warning: #e08e2b;
+  --warning-shadow: #b76f1c;
+  --warning-tint: #fdead0;
+  --warning-text: #6b3f08;
 
-  --card-shadow: 0 6px 0 rgba(43, 43, 64, 0.12);
+  --card-shadow: 0 6px 0 rgba(15, 46, 36, 0.12);
   --card-radius: 22px;
 
   /* Une police a lettres rondes, proche de l'ecriture apprise a l'ecole. */
@@ -93,8 +102,8 @@ body {
 }
 
 .stars {
-  background: var(--warning-tint);
-  border: 3px solid var(--warning);
+  background: var(--brand-gold-tint);
+  border: 3px solid var(--brand-gold);
   border-radius: 999px;
   padding: 6px 14px;
   font-weight: bold;
@@ -247,15 +256,15 @@ button {
 }
 
 .mode-card.listening {
-  border-color: #cfd5ff;
+  border-color: #ead9ae;
 }
 
 .mode-card.readAloud {
-  border-color: #ffd6da;
+  border-color: #b9d9c8;
 }
 
 .mode-card.dictation {
-  border-color: #d6f2e4;
+  border-color: #d7c79c;
 }
 
 /* ----------------------------- Choix de lecon ---------------------------- */
@@ -468,7 +477,7 @@ button {
 }
 
 .heard {
-  background: #f4f5ff;
+  background: #f6f1e4;
   border-radius: 14px;
   padding: 10px 14px;
   margin: 0;
