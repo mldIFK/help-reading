@@ -1,5 +1,5 @@
 /** Bandeau permanent : ou l'on est, combien d'etoiles, comment revenir. */
-export default function AppHeader({ title, totalStars, onGoBack, onOpenSettings }) {
+export default function AppHeader({ title, totalStars, onGoBack, onOpenProgress, onOpenSettings }) {
   return (
     <header className="topbar">
       {onGoBack && (
@@ -10,9 +10,19 @@ export default function AppHeader({ title, totalStars, onGoBack, onOpenSettings 
 
       <h1>{title}</h1>
 
-      <div className="stars" aria-label={`${totalStars} étoiles gagnées`}>
-        ⭐ {totalStars}
-      </div>
+      {onOpenProgress ? (
+        <button
+          className="stars"
+          onClick={onOpenProgress}
+          aria-label={`${totalStars} étoiles gagnées, voir le progrès`}
+        >
+          ⭐ {totalStars}
+        </button>
+      ) : (
+        <div className="stars" aria-label={`${totalStars} étoiles gagnées`}>
+          ⭐ {totalStars}
+        </div>
+      )}
 
       {onOpenSettings && (
         <button className="btn ghost icon" onClick={onOpenSettings} aria-label="Réglages">

@@ -65,15 +65,43 @@ describe('DictationScreen', () => {
     expect(screen.getByText(/bravo/i)).toBeInTheDocument()
   })
 
-  it('rewards a word written correctly on the first attempt', async () => {
+  it('does not reward a correctly written word until the child moves to the next word', async () => {
     const { user, onExerciseCompleted } = renderDictationScreen()
 
     await typeAnswer(user, 'cat')
     await user.click(screen.getByRole('button', { name: /vérifier/i }))
 
+    expect(onExerciseCompleted).not.toHaveBeenCalled()
+  })
+
+  it('rewards a word written correctly on the first attempt once the child moves to the next word', async () => {
+    const { user, onExerciseCompleted } = renderDictationScreen()
+
+    await typeAnswer(user, 'cat')
+    await user.click(screen.getByRole('button', { name: /vérifier/i }))
+    await user.click(screen.getByRole('button', { name: /mot suivant/i }))
+
     expect(onExerciseCompleted).toHaveBeenCalledWith(
       expect.objectContaining({ exerciseType: 'dictation', subject: 'cat', earnedStars: 2 })
     )
+  })
+
+  it('counts only the last attempt when the same word is checked several times', async () => {
+    const { user, onExerciseCompleted } = renderDictationScreen()
+
+    await typeAnswer(user, 'cap')
+    await user.click(screen.getByRole('button', { name: /vérifier/i }))
+
+    await typeAnswer(user, 'cat')
+    await user.click(screen.getByRole('button', { name: /vérifier/i }))
+
+    await typeAnswer(user, 'cat')
+    await user.click(screen.getByRole('button', { name: /vérifier/i }))
+
+    await user.click(screen.getByRole('button', { name: /mot suivant/i }))
+
+    expect(onExerciseCompleted).toHaveBeenCalledTimes(1)
+    expect(onExerciseCompleted).toHaveBeenCalledWith(expect.objectContaining({ earnedStars: 1 }))
   })
 
   it('points at the wrong letter instead of only saying it is wrong', async () => {
@@ -86,20 +114,22 @@ describe('DictationScreen', () => {
     expect(screen.getByTestId('letter-0')).toHaveAttribute('data-status', 'correct')
   })
 
-  it('gives no star for a misspelled word', async () => {
+  it('gives no star for a misspelled word, even after moving to the next word', async () => {
     const { user, onExerciseCompleted } = renderDictationScreen()
 
     await typeAnswer(user, 'cap')
     await user.click(screen.getByRole('button', { name: /vérifier/i }))
+    await user.click(screen.getByRole('button', { name: /mot suivant/i }))
 
     expect(onExerciseCompleted).not.toHaveBeenCalled()
   })
 
-  it('gives no star when the answer was revealed first', async () => {
+  it('gives no star when the answer was revealed first, even after moving to the next word', async () => {
     const { user, onExerciseCompleted } = renderDictationScreen()
 
     await user.click(screen.getByRole('button', { name: /montrer/i }))
     await user.click(screen.getByRole('button', { name: /vérifier/i }))
+    await user.click(screen.getByRole('button', { name: /mot suivant/i }))
 
     expect(onExerciseCompleted).not.toHaveBeenCalled()
   })

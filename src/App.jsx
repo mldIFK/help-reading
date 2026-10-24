@@ -19,6 +19,7 @@ import HomeScreen from './components/HomeScreen.jsx'
 import LessonEditorScreen from './components/LessonEditorScreen.jsx'
 import LessonPickerScreen from './components/LessonPickerScreen.jsx'
 import ListeningScreen from './components/ListeningScreen.jsx'
+import ProgressScreen from './components/ProgressScreen.jsx'
 import ReadAloudScreen from './components/ReadAloudScreen.jsx'
 import SettingsScreen from './components/SettingsScreen.jsx'
 import VoiceStudioScreen from './components/VoiceStudioScreen.jsx'
@@ -35,6 +36,7 @@ const SCREEN = {
   lessonEditor: 'lessonEditor',
   settings: 'settings',
   voiceStudio: 'voiceStudio',
+  progress: 'progress',
   ...EXERCISE_TYPE,
 }
 
@@ -44,6 +46,7 @@ const SCREEN_TITLES = {
   [SCREEN.lessonEditor]: 'Ajouter les devoirs',
   [SCREEN.settings]: 'Réglages',
   [SCREEN.voiceStudio]: 'Studio de voix',
+  [SCREEN.progress]: 'Mon progrès',
   [SCREEN.listening]: 'Écouter',
   [SCREEN.readAloud]: 'Lire à voix haute',
   [SCREEN.dictation]: 'Dictée',
@@ -142,6 +145,9 @@ export default function App() {
         title={SCREEN_TITLES[currentScreen]}
         totalStars={progress.totalStars}
         onGoBack={currentScreen === SCREEN.home ? null : goHome}
+        onOpenProgress={
+          currentScreen === SCREEN.progress ? null : () => goToScreen(SCREEN.progress)
+        }
         onOpenSettings={
           currentScreen === SCREEN.settings ? null : () => goToScreen(SCREEN.settings)
         }
@@ -196,16 +202,17 @@ export default function App() {
 
         {currentScreen === SCREEN.voiceStudio && <VoiceStudioScreen />}
 
+        {currentScreen === SCREEN.progress && (
+          <ProgressScreen progress={progress} onProgressCleared={setProgress} />
+        )}
+
         {currentScreen === SCREEN.settings && (
           <SettingsScreen
-            onOpenVoiceStudio={() => goToScreen(SCREEN.voiceStudio)}
             settings={settings}
             englishVoices={englishVoices}
             activeVoice={speechPlayer.voice}
             speechPlayer={speechPlayer}
-            progress={progress}
             onChangeSettings={changeSettings}
-            onProgressCleared={setProgress}
             lessonVoiceBackup={lessonVoiceBackup}
           />
         )}

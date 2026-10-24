@@ -21,6 +21,7 @@ export default function DictationScreen({ lesson, speechPlayer, settings, onExer
   const [attemptNumber, setAttemptNumber] = useState(0)
   const [wasRevealed, setWasRevealed] = useState(false)
   const [revealedLetterCount, setRevealedLetterCount] = useState(0)
+  const [starsPendingForCurrentWord, setStarsPendingForCurrentWord] = useState(0)
   const answerFieldRef = useRef(null)
 
   const currentWord = dictationWords[Math.min(currentWordPosition, dictationWords.length - 1)]
@@ -33,6 +34,7 @@ export default function DictationScreen({ lesson, speechPlayer, settings, onExer
     setAttemptNumber(0)
     setWasRevealed(false)
     setRevealedLetterCount(0)
+    setStarsPendingForCurrentWord(0)
 
     if (!currentWord) return undefined
 
@@ -65,20 +67,13 @@ export default function DictationScreen({ lesson, speechPlayer, settings, onExer
     setCorrection(spellingCorrection)
     setAttemptNumber(currentAttemptNumber)
 
-    const earnedStars = starsForDictation({
-      isExact: spellingCorrection.isExact,
-      attemptNumber: currentAttemptNumber,
-      wasRevealed,
-    })
-
-    if (earnedStars > 0) {
-      onExerciseCompleted({
-        exerciseType: EXERCISE_TYPE.dictation,
-        lessonTitle: lesson.title,
-        subject: currentWord.english,
-        earnedStars,
+    setStarsPendingForCurrentWord(
+      starsForDictation({
+        isExact: spellingCorrection.isExact,
+        attemptNumber: currentAttemptNumber,
+        wasRevealed,
       })
-    }
+    )
   }
 
   const revealOneMoreLetter = () => {
@@ -90,10 +85,21 @@ export default function DictationScreen({ lesson, speechPlayer, settings, onExer
     setWasRevealed(true)
     setTypedAnswer(currentWord.english)
     setCorrection(null)
+    setStarsPendingForCurrentWord(0)
   }
 
   const goToNextWord = () => {
     speechPlayer.stop()
+
+    if (starsPendingForCurrentWord > 0) {
+      onExerciseCompleted({
+        exerciseType: EXERCISE_TYPE.dictation,
+        lessonTitle: lesson.title,
+        subject: currentWord.english,
+        earnedStars: starsPendingForCurrentWord,
+      })
+    }
+
     setCurrentWordPosition((position) => (position + 1) % dictationWords.length)
   }
 

@@ -1,4 +1,3 @@
-import { EXERCISE_TYPE } from '../lib/exerciseTypes.js'
 import { isSpeechRecognitionAvailable } from '../lib/speech/speechRecognitionService.js'
 import { isSpeechSynthesisAvailable } from '../lib/speech/speechSynthesisService.js'
 import {
@@ -6,19 +5,18 @@ import {
   isRunningOnEdge,
   shouldSuggestAnotherBrowser,
 } from '../lib/speech/voiceQuality.js'
-import { clearProgress } from '../lib/storage/progressRepository.js'
 import LessonVoiceBackupSection from './LessonVoiceBackupSection.jsx'
 
 /**
- * Reglages, destines au parent : accent, voix, vitesse, suivi des etoiles et
- * diagnostic de l'appareil.
+ * Reglages, destines au parent : accent, voix, vitesse et diagnostic de
+ * l'appareil. Le suivi des etoiles vit dans son propre ecran (ProgressScreen),
+ * atteint depuis le bandeau.
  */
 
 const VOICE_TEST_SENTENCE = 'Hello! My name is Lucy. I have a little cat.'
 const SLOWEST_SPEED_OFFERED = 0.4
 const FASTEST_SPEED_OFFERED = 1.2
 const LONGEST_PAUSE_OFFERED_MS = 1200
-const EXERCISES_SHOWN_IN_HISTORY = 8
 
 const ACCENTS = [
   { languageTag: 'en-GB', label: '🇬🇧 Anglais britannique' },
@@ -30,26 +28,12 @@ export default function SettingsScreen({
   englishVoices,
   activeVoice,
   speechPlayer,
-  progress,
   onChangeSettings,
-  onProgressCleared,
-  onOpenVoiceStudio,
   lessonVoiceBackup,
 }) {
   return (
     <>
       <LessonVoiceBackupSection lessonVoiceBackup={lessonVoiceBackup} />
-
-      <section className="card">
-        <h2 className="section">🎙️ Voix enregistrée par une personne</h2>
-        <p className="muted">
-          Plutôt qu’une voix de synthèse, l’application peut reconstituer les mots à partir des
-          sons de l’anglais enregistrés par un adulte anglophone.
-        </p>
-        <button className="btn" onClick={onOpenVoiceStudio}>
-          🎙️ Ouvrir le studio de voix
-        </button>
-      </section>
 
       <section className="card">
         <h2 className="section">🇬🇧 Accent</h2>
@@ -161,7 +145,6 @@ export default function SettingsScreen({
         </div>
       </section>
 
-      <ProgressReport progress={progress} onProgressCleared={onProgressCleared} />
       <DeviceReport englishVoices={englishVoices} />
     </>
   )
@@ -186,38 +169,6 @@ function BetterVoicesAdvice({ englishVoices }) {
       Ryan), bien plus proches d’une vraie personne. Rien à installer, rien à changer dans
       l’application — elles apparaîtront ici avec une ⭐.
     </p>
-  )
-}
-
-function ProgressReport({ progress, onProgressCleared }) {
-  return (
-    <section className="card">
-      <h2 className="section">⭐ Progrès</h2>
-      <p className="star-total">
-        {progress.totalStars} étoile{progress.totalStars > 1 ? 's' : ''}
-      </p>
-
-      {progress.recentExercises.length > 0 && (
-        <ul className="muted">
-          {progress.recentExercises.slice(0, EXERCISES_SHOWN_IN_HISTORY).map((exercise) => (
-            <li key={exercise.completedAt}>
-              {exercise.exerciseType === EXERCISE_TYPE.readAloud ? '🎤' : '✍️'} {exercise.subject} —{' '}
-              {'⭐'.repeat(exercise.earnedStars)}
-              {exercise.scorePercentage !== undefined ? ` (${exercise.scorePercentage}%)` : ''}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <button
-        className="btn ghost"
-        onClick={() => {
-          if (window.confirm('Remettre les étoiles à zéro ?')) onProgressCleared(clearProgress())
-        }}
-      >
-        🔄 Remettre à zéro
-      </button>
-    </section>
   )
 }
 

@@ -31,6 +31,7 @@ export default function ReadAloudScreen({ lesson, speechPlayer, settings, onExer
   const [heardSoFar, setHeardSoFar] = useState('')
   const [score, setScore] = useState(null)
   const [microphoneProblem, setMicrophoneProblem] = useState('')
+  const [starsPendingForCurrentPassage, setStarsPendingForCurrentPassage] = useState(0)
   const microphoneRef = useRef(null)
 
   const passages = useMemo(() => listPassages(lesson, chosenPassage), [lesson, chosenPassage])
@@ -43,6 +44,7 @@ export default function ReadAloudScreen({ lesson, speechPlayer, settings, onExer
     setScore(null)
     setHeardSoFar('')
     setMicrophoneProblem('')
+    setStarsPendingForCurrentPassage(0)
   }, [lesson.id, chosenPassage])
 
   useEffect(
@@ -86,25 +88,27 @@ export default function ReadAloudScreen({ lesson, speechPlayer, settings, onExer
   const gradeReading = (heardSentence) => {
     const readingScore = scorePronunciation(currentPassage, heardSentence)
     setScore(readingScore)
-
-    const earnedStars = starsForPronunciation(readingScore.percentage)
-    if (earnedStars > 0) {
-      onExerciseCompleted({
-        exerciseType: EXERCISE_TYPE.readAloud,
-        lessonTitle: lesson.title,
-        subject: currentPassage,
-        earnedStars,
-        scorePercentage: readingScore.percentage,
-      })
-    }
+    setStarsPendingForCurrentPassage(starsForPronunciation(readingScore.percentage))
   }
 
   const goToNextPassage = () => {
     microphoneRef.current?.cancelListening()
     speechPlayer.stop()
+
+    if (starsPendingForCurrentPassage > 0) {
+      onExerciseCompleted({
+        exerciseType: EXERCISE_TYPE.readAloud,
+        lessonTitle: lesson.title,
+        subject: currentPassage,
+        earnedStars: starsPendingForCurrentPassage,
+        scorePercentage: score?.percentage,
+      })
+    }
+
     setScore(null)
     setHeardSoFar('')
     setMicrophoneProblem('')
+    setStarsPendingForCurrentPassage(0)
     setCurrentPassagePosition((position) => (position + 1) % passages.length)
   }
 
