@@ -8,9 +8,9 @@
 
 export const BUILT_IN_LESSONS = [
   {
-    id: 'school-supplies',
+    id: 'school',
     emoji: '🎒',
-    title: 'School supplies',
+    title: 'At school',
     subtitle: 'Les fournitures scolaires',
     vocabulary: [
       { english: 'pen', french: 'stylo', emoji: '🖊️' },
@@ -156,25 +156,6 @@ export const BUILT_IN_LESSONS = [
       { english: 'chocolate', french: 'chocolat', emoji: '🍫' },
     ],
     readingText: 'I like apples and bread. I do not like milk. What do you like?',
-  },
-  {
-    id: 'school',
-    emoji: '🎒',
-    title: 'At school',
-    subtitle: "L'école",
-    vocabulary: [
-      { english: 'school', french: 'école', emoji: '🏫' },
-      { english: 'book', french: 'livre', emoji: '📕' },
-      { english: 'pencil', french: 'crayon', emoji: '✏️' },
-      { english: 'pen', french: 'stylo', emoji: '🖊️' },
-      { english: 'bag', french: 'sac', emoji: '🎒' },
-      { english: 'ruler', french: 'règle', emoji: '📏' },
-      { english: 'teacher', french: 'maître, maîtresse', emoji: '👩‍🏫' },
-      { english: 'chair', french: 'chaise', emoji: '🪑' },
-      { english: 'table', french: 'table', emoji: '🪑' },
-      { english: 'scissors', french: 'ciseaux', emoji: '✂️' },
-    ],
-    readingText: 'I go to school every day. I have a red bag and a blue pencil.',
   },
   {
     id: 'days',
