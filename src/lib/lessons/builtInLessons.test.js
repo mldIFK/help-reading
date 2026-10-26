@@ -45,3 +45,31 @@ describe('findBuiltInLesson', () => {
     expect(findBuiltInLesson('does-not-exist')).toBeNull()
   })
 })
+
+describe('lesson order', () => {
+  it('lists school supplies, colours and body as the first three lessons', () => {
+    const firstThreeLessonIdentifiers = BUILT_IN_LESSONS.slice(0, 3).map((lesson) => lesson.id)
+
+    expect(firstThreeLessonIdentifiers).toEqual(['school-supplies', 'colours', 'body'])
+  })
+})
+
+describe('school supplies lesson', () => {
+  it('teaches the English words for common school supplies', () => {
+    const schoolSuppliesVocabulary = findBuiltInLesson('school-supplies').vocabulary.map(
+      (entry) => entry.english
+    )
+
+    expect(schoolSuppliesVocabulary).toEqual([
+      'pen',
+      'ruler',
+      'pencil',
+      'book',
+      'rubber',
+      'folder',
+      'bag',
+      'bookcase',
+      'pencil case',
+    ])
+  })
+})
